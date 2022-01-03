@@ -1,0 +1,20 @@
+version: '3'
+services:
+
+  web-php-8:
+    build:
+        context: .
+        dockerfile: php_8.1-fpm
+    image: local-php8.1-fpm
+    container_name: php8_php
+    working_dir: /opt/laravel
+    volumes:
+      - C:/Users/DEV/Documents/laravel:/C:/Users/DEV/Documents
+    command: php C:/Users/DEV/Documents/laravel/api-pelayanan/artisan serve --host=0.0.0.0 --port=8000
+    ports:
+      - "9098:8000"
+    networks:
+      - local-wan
+
+networks:
+  local-wan:

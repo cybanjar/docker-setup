@@ -1,0 +1,40 @@
+FROM php:7.2-fpm
+
+RUN apt-get update
+RUN apt-get install -y autoconf pkg-config curl
+RUN apt-get update
+RUN apt-get install -y openssl vim libssl-dev p7zip-full zip unzip
+
+RUN pecl install mongodb
+RUN docker-php-ext-install pdo_mysql bcmath
+RUN echo "extension=mongodb.so" >> /usr/local/etc/php/conf.d/mongodb.ini
+
+# Install Memcached
+RUN pecl install -o -f redis \
+&&  rm -rf /tmp/pear \
+&&  echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini 
+
+# Install Laravel dependencies
+RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev
+
+RUN docker-php-ext-install mbstring   
+RUN apt-get install -y \
+        libzip-dev \
+        zip \
+  && docker-php-ext-configure zip --with-libzip \
+  && docker-php-ext-install zip \
+  && docker-php-ext-install gd  
+#RUN apt-get install -y supervisor && \
+#  sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
+  
+#COPY /Volumes/Data/project/docker/suara/dockerfile/php7/php.ini /usr/local/etc/php/conf.d/40-custom.ini
+
+# Install Phalcon
+RUN apt-get install -y git
+RUN git clone https://github.com/phalcon/cphalcon \
+  && cd cphalcon \
+  && git checkout 3.2.x \
+  && cd build \
+  && ./install \
+  && echo "extension=phalcon.so" > /usr/local/etc/php/conf.d/phalcon.ini
+
